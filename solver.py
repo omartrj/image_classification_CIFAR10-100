@@ -6,6 +6,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR100, CIFAR10
 from utils.transform import get_transforms
+from utils.logger import get_logger
+import logging
 from net import Net
 from tqdm import tqdm
 import numpy as np
@@ -24,6 +26,8 @@ from rich.progress import (
 class Solver:
     def __init__(self, args):
         self.args = args
+        self.logger = get_logger()
+
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"[INFO] Using device: {'CUDA' if self.device.type == 'cuda' else 'CPU'}")
 
@@ -62,7 +66,7 @@ class Solver:
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode="min", factor=0.5, patience=5
+            self.optimizer, mode="min", factor=0.5, patience=2
         )
 
         # Crea la directory per salvare i checkpoint e carica un checkpoint se specificato
@@ -78,7 +82,7 @@ class Solver:
     def _load_checkpoint(self, checkpoint_path):
         # Carica un checkpoint salvato per riprendere l'addestramento
         if os.path.isfile(checkpoint_path):
-            checkpoint = torch.load(checkpoint_path, map_location=self.device)
+            checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False) # weights_only=False per evitare warning
             self.model.load_state_dict(checkpoint["model_state_dict"])
             self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
             self.start_epoch = checkpoint["epoch"]
@@ -124,6 +128,9 @@ class Solver:
             # Esegue un'epoca di addestramento
             self._train_one_epoch(epoch)
 
+            # Salva un checkpoint del modello
+            self._save_checkpoint(epoch)
+
             # Valuta il modello sul training set e sul test set
             train_accuracy, train_loss = self._evaluate(self.train_loader)
             test_accuracy, test_loss = self._evaluate(self.test_loader)
@@ -134,14 +141,11 @@ class Solver:
             )
 
             # Controlla i criteri di early stopping
-            if self._early_stop(test_accuracy, patience=3):
+            if self._early_stop(test_accuracy, patience=5):
                 print(
                     f"[INFO] Early stopping activated at epoch {epoch + 1}. Best test accuracy: {self.best_test_accuracy:.2f}%"
                 )
                 break
-
-            # Salva un checkpoint del modello
-            self._save_checkpoint(epoch)
 
             # Aggiorna il learning rate utilizzando lo scheduler
             self.scheduler.step(test_loss)
@@ -211,7 +215,7 @@ class Solver:
                 [epoch + 1, train_accuracy, test_accuracy, train_loss, test_loss]
             )
 
-    def _early_stop(self, test_accuracy, patience=3):
+    def _early_stop(self, test_accuracy, patience):
         # Controlla i criteri di early stopping basati sull'accuracy del test
         if test_accuracy > self.best_test_accuracy:
             self.best_test_accuracy = test_accuracy

@@ -7,10 +7,12 @@ class Net(nn.Module):
     def __init__(self, backbone_name, num_classes):
         super(Net, self).__init__()
         if backbone_name == "custom":
-            self.backbone = CustomBackbone(num_classes=num_classes)
+            self.backbone = CustomBackbone(num_classes=num_classes, use_stride=False)
         elif backbone_name == "resnet50":
             self.backbone = get_backbone(
-                backbone_name=backbone_name, num_classes=num_classes
+                backbone_name=backbone_name,
+                num_classes=num_classes,
+                freeze_layers_up_to_block=3,
             )
         else:
             raise ValueError(

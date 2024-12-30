@@ -14,9 +14,11 @@ def get_transforms(dataset_name, pretrained=False):
         mean = [0.5071, 0.4867, 0.4408]
         std = [0.2675, 0.2565, 0.2761]
 
-    # Trasformazioni per il training
+    # Trasformazioni per il training.
+    # Le immagini sono di dimensione 32x32
     transform_train = transforms.Compose([
-        #transforms.RandomCrop(32, padding=4),
+        transforms.Resize(224) if pretrained else transforms.Resize(32),
+        transforms.RandomCrop(224, padding=4) if pretrained else transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean=mean, std=std)
@@ -24,6 +26,7 @@ def get_transforms(dataset_name, pretrained=False):
 
     # Trasformazioni per il test
     transform_test = transforms.Compose([
+        transforms.Resize(224) if pretrained else transforms.Resize(32),
         transforms.ToTensor(),
         transforms.Normalize(mean=mean, std=std)
     ])
