@@ -1,7 +1,7 @@
 {
     "lr": 0.001,
     "batch_size": 32,
-    "epochs": 5,
+    "epochs": 50,
     "backbone": "custom",
     "dataset": "cifar10",
     "data_root": "./data",
