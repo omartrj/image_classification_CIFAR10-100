@@ -1,0 +1,11 @@
+{
+    "lr": 0.001,
+    "batch_size": 32,
+    "epochs": 5,
+    "backbone": "custom",
+    "dataset": "cifar10",
+    "data_root": "./data",
+    "checkpoint_path": "./checkpoints/cifar10_custom",
+    "checkpoint_file": null,
+    "test": false
+}
