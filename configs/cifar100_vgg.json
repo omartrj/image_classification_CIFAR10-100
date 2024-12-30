@@ -1,11 +1,12 @@
 {
-    "lr": 0.001,
+    "lr": 0.0001,
     "batch_size": 32,
     "epochs": 100,
-    "backbone": "custom",
+    "backbone": "vgg16",
     "dataset": "cifar100",
     "data_root": "./data",
-    "checkpoint_path": "./checkpoints/cifar100_custom",
+    "checkpoint_path": "./checkpoints/cifar100_vgg",
     "checkpoint_file": null,
     "test": false
 }
+    

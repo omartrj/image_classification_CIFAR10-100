@@ -1,7 +1,7 @@
 {
-    "lr": 0.0005,
+    "lr": 0.0001,
     "batch_size": 32,
-    "epochs": 50,
+    "epochs": 100,
     "backbone": "resnet50",
     "dataset": "cifar100",
     "data_root": "./data",

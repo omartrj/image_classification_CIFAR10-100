@@ -17,7 +17,7 @@ def get_transforms(dataset_name, pretrained=False):
     # Trasformazioni per il training.
     # Le immagini sono di dimensione 32x32
     transform_train = transforms.Compose([
-        transforms.Resize(224) if pretrained else transforms.Resize(32),
+        transforms.Resize(224) if pretrained else transforms.Resize(32), # Resize a 224x224 per modelli pre-addestrati
         transforms.RandomCrop(224, padding=4) if pretrained else transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),

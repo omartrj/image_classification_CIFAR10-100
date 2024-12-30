@@ -8,11 +8,11 @@ class Net(nn.Module):
         super(Net, self).__init__()
         if backbone_name == "custom":
             self.backbone = CustomBackbone(num_classes=num_classes, use_stride=False)
-        elif backbone_name == "resnet50":
+        elif backbone_name == "resnet50" or backbone_name == "vgg16":
             self.backbone = get_backbone(
                 backbone_name=backbone_name,
                 num_classes=num_classes,
-                freeze_layers_up_to_block=3,
+                freeze_layers=True,
             )
         else:
             raise ValueError(

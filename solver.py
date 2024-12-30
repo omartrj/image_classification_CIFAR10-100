@@ -66,7 +66,7 @@ class Solver:
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode="min", factor=0.5, patience=2
+            self.optimizer, mode="min", factor=0.1, patience=3
         )
 
         # Crea la directory per salvare i checkpoint e carica un checkpoint se specificato

@@ -12,7 +12,7 @@ def main():
         "--backbone",
         type=str,
         default="custom",
-        choices=["resnet50", "custom"],
+        choices=["resnet50", "vgg16", "custom"],
         help="Backbone da utilizzare",
     )
     parser.add_argument(

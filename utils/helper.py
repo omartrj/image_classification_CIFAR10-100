@@ -21,7 +21,13 @@ def run_experiment(config, test=False):
 
 
     print(f"[INFO] Running command: {' '.join(command)}")
-    print("[INFO] Model: ", "Custom" if config['backbone'] == "custom" else "ResNet50")
+    if config['backbone'] == "custom":
+        model = "Custom Model"
+    elif config['backbone'] == "resnet50":
+        model = "ResNet50"
+    elif config['backbone'] == "vgg16":
+        model = "VGG16"
+    print("[INFO] Model: ", model)
     print("[INFO] Dataset: ", "CIFAR10" if config['dataset'] == "cifar10" else "CIFAR100")
 
     subprocess.run(command)
