@@ -11,6 +11,14 @@ from tqdm import tqdm
 import numpy as np
 from sklearn.metrics import confusion_matrix, classification_report
 import json
+from rich.progress import (
+    Progress,
+    SpinnerColumn,
+    BarColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 
 
 class Solver:
@@ -112,10 +120,12 @@ class Solver:
 
     def fit(self):
         for epoch in range(self.start_epoch, self.args.epochs):
-            # Esegue un'epoca di addestramento
-            train_accuracy, train_loss = self._train_one_epoch(epoch)
 
-            # Valuta il modello sul test set
+            # Esegue un'epoca di addestramento
+            self._train_one_epoch(epoch)
+
+            # Valuta il modello sul training set e sul test set
+            train_accuracy, train_loss = self._evaluate(self.train_loader)
             test_accuracy, test_loss = self._evaluate(self.test_loader)
 
             # Registra le metriche nel file CSV
@@ -130,13 +140,15 @@ class Solver:
                 )
                 break
 
+            # Salva un checkpoint del modello
+            self._save_checkpoint(epoch)
+
             # Aggiorna il learning rate utilizzando lo scheduler
             self.scheduler.step(test_loss)
 
     def _train_one_epoch(self, epoch):
         # Addestra il modello per una singola epoca
         self.model.train()
-        total_loss, correct, total = 0, 0, 0
 
         with tqdm(
             total=len(self.train_loader),
@@ -153,31 +165,29 @@ class Solver:
                 loss.backward()
                 self.optimizer.step()
 
-                # Aggiorna le metriche cumulative
-                total_loss += loss.item()
-                correct += output.argmax(dim=1).eq(target).sum().item()
-                total += target.size(0)
-
                 # Aggiorna la barra di avanzamento
                 pbar.set_postfix(
-                    loss=f"{total_loss / (pbar.n + 1):.4f}",
+                    loss=f"{loss.item():.4f}",
                     lr=self.optimizer.param_groups[0]["lr"],
                 )
                 pbar.update(1)
-
-        return 100 * correct / total, total_loss / len(self.train_loader)
 
     def _evaluate(self, data_loader):
         # Valuta il modello su un data loader specifico
         self.model.eval()
         total_loss, correct, total = 0, 0, 0
 
-        with torch.no_grad():
-            with tqdm(
-                total=len(data_loader),
-                desc="Evaluating",
-                unit="batch",
-            ) as pbar:
+        # Configura il progress bar con uno spinner e una barra, con stile personalizzato
+        with Progress(
+            SpinnerColumn(),
+            TextColumn(
+                f"Evaluating on {'test' if data_loader == self.test_loader else 'train'} set", style="white"
+            ),
+            transient=True,  # Rimuove la barra dopo il completamento
+        ) as progress:
+            task = progress.add_task("eval", total=len(data_loader))
+
+            with torch.no_grad():
                 for data, target in data_loader:
                     data, target = data.to(self.device), target.to(self.device)
                     output = self.model(data)
@@ -185,10 +195,13 @@ class Solver:
                     correct += output.argmax(dim=1).eq(target).sum().item()
                     total += target.size(0)
 
-                    pbar.set_postfix(accuracy=f"{100 * correct / total:.2f}%")
-                    pbar.update(1)
+                    # Avanza la barra di completamento
+                    progress.update(task, advance=1)
 
-        return 100 * correct / total, total_loss / len(data_loader)
+        # Calcola e restituisce le metriche
+        accuracy = 100 * correct / total
+        avg_loss = total_loss / len(data_loader)
+        return accuracy, avg_loss
 
     def _log_metrics(self, epoch, train_accuracy, test_accuracy, train_loss, test_loss):
         # Registra le metriche di addestramento e test in un file CSV

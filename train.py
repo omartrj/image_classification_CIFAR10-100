@@ -7,9 +7,9 @@ def main():
     # Configurazioni
     configs = [
         "./configs/cifar10_custom.json",
-        #"./configs/cifar100_custom.json",
+        "./configs/cifar100_custom.json",
         "./configs/cifar10_resnet.json",
-        #"./configs/cifar100_resnet.json",
+        "./configs/cifar100_resnet.json",
     ]
 
     # Esegui gli esperimenti in modalità train

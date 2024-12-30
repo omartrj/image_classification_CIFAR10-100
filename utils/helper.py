@@ -21,8 +21,8 @@ def run_experiment(config, test=False):
 
 
     print(f"[INFO] Running command: {' '.join(command)}")
-    print("[INFO] Model: ", config['backbone'])
-    print("[INFO] Dataset: ", config['dataset'])
+    print("[INFO] Model: ", "Custom" if config['backbone'] == "custom" else "ResNet50")
+    print("[INFO] Dataset: ", "CIFAR10" if config['dataset'] == "cifar10" else "CIFAR100")
 
     subprocess.run(command)
 
