@@ -16,7 +16,7 @@ def get_transforms(dataset_name, pretrained=False):
 
     # Trasformazioni per il training
     transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
+        #transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean=mean, std=std)

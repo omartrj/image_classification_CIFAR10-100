@@ -150,7 +150,6 @@ class Solver:
         # Addestra il modello per una singola epoca
         self.model.train()
 
-        total_loss = 0
         with tqdm(
             total=len(self.train_loader),
             desc=f"Epoch {epoch + 1}/{self.args.epochs}",
@@ -163,14 +162,12 @@ class Solver:
                 self.optimizer.zero_grad()
                 output = self.model(data)
                 loss = self.criterion(output, target)
-                total_loss += loss.item()
                 loss.backward()
                 self.optimizer.step()
 
-                # Aggiorna la barra di avanzamento con la loss media fin'ora
+                # Aggiorna la barra di avanzamento
                 pbar.set_postfix(
-                    #loss=f"{loss.item():.4f}",
-                    loss=f"{total_loss / (pbar.n + 1):.4f}",
+                    loss=f"{loss.item():.4f}",
                     lr=self.optimizer.param_groups[0]["lr"],
                 )
                 pbar.update(1)
