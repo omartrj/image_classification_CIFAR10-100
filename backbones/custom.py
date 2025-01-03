@@ -12,14 +12,14 @@ class CustomBackbone(nn.Module):
         self.block1 = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=3, padding=1, stride=1),
             nn.BatchNorm2d(64),
-            nn.ReLU()
+            nn.ReLU(),
         ) # -> 64x32x32
 
         # Block 2: Secondo strato convoluzionale
         self.block2 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=3, padding=1, stride=1),
             nn.BatchNorm2d(128),
-            nn.ReLU()
+            nn.ReLU(),
         ) # -> 128x32x32
 
         # Block 3: Terzo strato convoluzionale (con downsampling)
@@ -34,7 +34,7 @@ class CustomBackbone(nn.Module):
         self.block4 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=3, padding=1, stride=1),
             nn.BatchNorm2d(256),
-            nn.ReLU()
+            nn.ReLU(),
         ) # -> 256x16x16
 
         # Block 5: Quinto strato convoluzionale (con downsampling)
@@ -49,7 +49,7 @@ class CustomBackbone(nn.Module):
         self.block6 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=3, padding=1, stride=1),
             nn.BatchNorm2d(512),
-            nn.ReLU()
+            nn.ReLU(),
         ) # -> 512x8x8
 
         # Classificatore finale
