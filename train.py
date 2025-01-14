@@ -10,8 +10,6 @@ def main():
         "./configs/cifar100_custom.json",
         "./configs/cifar10_resnet.json",
         "./configs/cifar100_resnet.json",
-        "./configs/cifar10_vgg.json",
-        "./configs/cifar100_vgg.json",
     ]
 
     # Esegui gli esperimenti in modalità train

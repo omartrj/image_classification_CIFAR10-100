@@ -1,6 +1,6 @@
 {
-    "lr": 0.001,
-    "batch_size": 32,
+    "lr": 0.01,
+    "batch_size": 128,
     "epochs": 100,
     "backbone": "custom",
     "dataset": "cifar100",

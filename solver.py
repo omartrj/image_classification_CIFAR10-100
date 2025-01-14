@@ -64,9 +64,9 @@ class Solver:
             self.device
         )
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr)
+        self.optimizer = optim.AdamW(self.model.parameters(), lr=self.args.lr)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode="min", factor=0.1, patience=3
+            self.optimizer, mode="min", factor=0.1, patience=2
         )
 
         # Crea la directory per salvare i checkpoint e carica un checkpoint se specificato
@@ -76,8 +76,8 @@ class Solver:
             self._load_checkpoint(self.args.checkpoint_file)
 
         # Imposta i parametri per l'early stopping
+        self.best_test_loss = float("inf")
         self.best_test_accuracy = 0
-        self.patience_counter = 0
 
     def _load_checkpoint(self, checkpoint_path):
         # Carica un checkpoint salvato per riprendere l'addestramento
@@ -141,9 +141,9 @@ class Solver:
             )
 
             # Controlla i criteri di early stopping
-            if self._early_stop(test_accuracy, patience=5):
+            if self._early_stop(test_loss):
                 print(
-                    f"[INFO] Early stopping activated at epoch {epoch + 1}. Best test accuracy: {self.best_test_accuracy:.2f}%"
+                    f"[INFO] Early stopping activated at epoch {epoch + 1}"
                 )
                 break
 
@@ -215,10 +215,10 @@ class Solver:
                 [epoch + 1, train_accuracy, test_accuracy, train_loss, test_loss]
             )
 
-    def _early_stop(self, test_accuracy, patience):
-        # Controlla i criteri di early stopping basati sull'accuracy del test
-        if test_accuracy > self.best_test_accuracy:
-            self.best_test_accuracy = test_accuracy
+    def _early_stop(self, test_loss, patience=5, threshold=0.001):
+        # Implementa il criterio di early stopping
+        if self.best_test_loss - test_loss >= threshold:
+            self.best_test_loss = test_loss
             self.patience_counter = 0
             return False
         else:
@@ -226,6 +226,7 @@ class Solver:
             if self.patience_counter >= patience:
                 return True
             return False
+
 
     def test(self):
         # Valuta il modello sul test set e stampa i risultati
