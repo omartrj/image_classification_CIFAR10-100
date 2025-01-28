@@ -16,10 +16,7 @@ import json
 from rich.progress import (
     Progress,
     SpinnerColumn,
-    BarColumn,
     TextColumn,
-    TimeElapsedColumn,
-    TimeRemainingColumn,
 )
 
 

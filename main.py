@@ -18,7 +18,7 @@ def main():
     parser.add_argument(
         "--dataset",
         type=str,
-        default="cifar100",
+        default="cifar10",
         choices=["cifar10", "cifar100"],
         help="Dataset da utilizzare",
     )
