@@ -193,7 +193,10 @@ class Solver:
                     data, target = data.to(self.device), target.to(self.device)
                     output = self.model(data)
                     total_loss += self.criterion(output, target).item()
-                    correct += output.argmax(dim=1).eq(target).sum().item()
+                    #correct += output.argmax(dim=1).eq(target).sum().item()
+                    # Usa softmax
+                    probabilities = nn.functional.softmax(output, dim=1)
+                    correct += probabilities.argmax(dim=1).eq(target).sum().item()
                     total += target.size(0)
 
                     # Avanza la barra di completamento
